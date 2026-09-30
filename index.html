@@ -3,23 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NuSim — Simulador</title>
+  <title>Nubank-v-</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: #f5f5f7;
+      color: #171717;
     }
 
     .purple {
       background: #820ad1;
     }
 
+    .purple-dark {
+      background: #5f0799;
+    }
+
     .modal {
-      background: rgba(0,0,0,.55);
+      background: rgba(0, 0, 0, .58);
+      backdrop-filter: blur(5px);
+    }
+
+    .card {
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .card:active {
+      transform: scale(.985);
+    }
+
+    .shortcut {
+      transition: transform .15s ease, background .15s ease;
+    }
+
+    .shortcut:active {
+      transform: scale(.94);
+      background: #f0e5f8;
+    }
+
+    .fade {
+      animation: fade .25s ease;
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .slide {
+      animation: slide .3s ease;
+    }
+
+    @keyframes slide {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    input:focus {
+      border-color: #820ad1;
+      box-shadow: 0 0 0 3px rgba(130, 10, 209, .1);
     }
 
     input::-webkit-outer-spin-button,
@@ -33,31 +98,44 @@
 <body>
 
 <!-- LOGIN -->
-<div id="loginScreen" class="min-h-screen purple flex items-center justify-center p-6">
-  <div class="bg-white rounded-3xl p-7 w-full max-w-sm shadow-2xl">
+<div id="loginScreen"
+     class="min-h-screen purple flex items-center justify-center p-5">
 
-    <div class="text-center mb-7">
-      <div class="text-4xl font-black text-purple-700 mb-2">NuSim</div>
-      <p class="text-gray-500">Simulador bancário local</p>
+  <div class="bg-white rounded-[30px] p-7 w-full max-w-sm shadow-2xl fade">
+
+    <div class="mb-8">
+      <div class="text-4xl font-black text-purple-700 tracking-tight">
+        Nubank-v-
+      </div>
+
+      <p class="text-gray-500 mt-2">
+        Seu banco, do seu jeito.
+      </p>
     </div>
+
+    <label class="text-sm font-semibold text-gray-700">
+      Como podemos te chamar?
+    </label>
 
     <input
       id="nameInput"
       type="text"
+      maxlength="30"
       placeholder="Seu nome"
-      class="w-full border rounded-xl px-4 py-4 mb-4 outline-none"
+      class="w-full border border-gray-200 rounded-2xl px-4 py-4 mt-2 outline-none transition"
     >
 
     <button
       onclick="login()"
-      class="w-full bg-purple-700 text-white py-4 rounded-xl font-bold"
+      class="w-full purple text-white py-4 rounded-2xl font-bold mt-4 active:scale-[.98] transition"
     >
-      Entrar no simulador
+      Entrar
     </button>
 
     <p class="text-xs text-gray-400 text-center mt-5">
-      SIMULADOR — nenhuma operação movimenta dinheiro real.
+      Projeto pessoal local.
     </p>
+
   </div>
 </div>
 
@@ -66,153 +144,330 @@
 <div id="app" class="hidden min-h-screen">
 
   <!-- HEADER -->
-  <header class="purple text-white px-5 pt-6 pb-8 rounded-b-[35px]">
+  <header class="purple text-white rounded-b-[38px] shadow-lg">
 
-    <div class="flex justify-between items-center">
-      <div>
-        <p class="text-sm opacity-80">SIMULADOR LOCAL</p>
-        <h1 id="hello" class="text-xl font-bold">Olá!</h1>
+    <div class="max-w-xl mx-auto px-5 pt-6 pb-9">
+
+      <div class="flex items-center justify-between">
+
+        <div>
+          <p class="text-sm opacity-80">
+            Olá,
+          </p>
+
+          <h1 id="hello"
+              class="text-2xl font-bold mt-0.5">
+            Olá!
+          </h1>
+        </div>
+
+        <div class="flex items-center gap-1">
+
+          <button
+            onclick="toggleBalance()"
+            class="p-3 rounded-full hover:bg-white/10 transition"
+            aria-label="Mostrar ou ocultar saldo"
+          >
+            <i data-lucide="eye"></i>
+          </button>
+
+          <button
+            onclick="openSettings()"
+            class="p-3 rounded-full hover:bg-white/10 transition"
+            aria-label="Configurações"
+          >
+            <i data-lucide="settings"></i>
+          </button>
+
+        </div>
+
       </div>
 
-      <button onclick="toggleBalance()" class="p-3">
-        <i data-lucide="eye"></i>
-      </button>
-    </div>
 
-    <div class="mt-7">
-      <p class="text-sm opacity-80">Saldo disponível</p>
+      <div class="mt-9">
 
-      <div class="flex items-center gap-3">
-        <h2 id="balance" class="text-3xl font-bold">R$ 0,00</h2>
+        <p class="text-sm opacity-80">
+          Saldo disponível
+        </p>
 
-        <button onclick="editValue('balance')" class="opacity-80">
-          <i data-lucide="pencil" size="18"></i>
-        </button>
+        <div class="flex items-center gap-3 mt-1">
+
+          <h2 id="balance"
+              class="text-[34px] leading-tight font-black">
+            R$ 0,00
+          </h2>
+
+          <button
+            onclick="editValue('balance')"
+            class="opacity-80 hover:opacity-100"
+          >
+            <i data-lucide="pencil" size="18"></i>
+          </button>
+
+        </div>
+
       </div>
-    </div>
 
-    <div class="mt-4 inline-flex bg-white/20 px-3 py-1 rounded-full text-xs">
-      SIMULAÇÃO
     </div>
   </header>
 
 
   <!-- CONTENT -->
-  <main class="p-5 max-w-xl mx-auto">
+  <main class="max-w-xl mx-auto p-5 pb-10">
 
     <!-- ATALHOS -->
-    <section class="grid grid-cols-4 gap-3 mb-7">
+    <section class="grid grid-cols-4 gap-2 sm:gap-3 mb-7">
 
-      <button onclick="pix()" class="bg-white rounded-2xl p-4 shadow-sm">
+      <button
+        onclick="pix()"
+        class="shortcut bg-white rounded-2xl p-3 sm:p-4 shadow-sm"
+      >
         <div class="bg-purple-100 rounded-full p-3 w-fit mx-auto mb-2">
-          <i data-lucide="send" class="text-purple-700"></i>
+          <i data-lucide="send" class="text-purple-700" size="20"></i>
         </div>
-        <span class="text-xs font-bold">Pix</span>
+
+        <span class="text-xs font-bold">
+          Pix
+        </span>
       </button>
 
-      <button onclick="editValue('balance')" class="bg-white rounded-2xl p-4 shadow-sm">
+
+      <button
+        onclick="editValue('balance')"
+        class="shortcut bg-white rounded-2xl p-3 sm:p-4 shadow-sm"
+      >
         <div class="bg-purple-100 rounded-full p-3 w-fit mx-auto mb-2">
-          <i data-lucide="wallet" class="text-purple-700"></i>
+          <i data-lucide="wallet" class="text-purple-700" size="20"></i>
         </div>
-        <span class="text-xs font-bold">Saldo</span>
+
+        <span class="text-xs font-bold">
+          Saldo
+        </span>
       </button>
 
-      <button onclick="editValue('invoice')" class="bg-white rounded-2xl p-4 shadow-sm">
+
+      <button
+        onclick="editValue('invoice')"
+        class="shortcut bg-white rounded-2xl p-3 sm:p-4 shadow-sm"
+      >
         <div class="bg-purple-100 rounded-full p-3 w-fit mx-auto mb-2">
-          <i data-lucide="credit-card" class="text-purple-700"></i>
+          <i data-lucide="credit-card"
+             class="text-purple-700"
+             size="20"></i>
         </div>
-        <span class="text-xs font-bold">Cartão</span>
+
+        <span class="text-xs font-bold">
+          Cartão
+        </span>
       </button>
 
-      <button onclick="editValue('loan')" class="bg-white rounded-2xl p-4 shadow-sm">
+
+      <button
+        onclick="editValue('loan')"
+        class="shortcut bg-white rounded-2xl p-3 sm:p-4 shadow-sm"
+      >
         <div class="bg-purple-100 rounded-full p-3 w-fit mx-auto mb-2">
-          <i data-lucide="banknote" class="text-purple-700"></i>
+          <i data-lucide="banknote"
+             class="text-purple-700"
+             size="20"></i>
         </div>
-        <span class="text-xs font-bold">Emprést.</span>
+
+        <span class="text-xs font-bold">
+          Emprést.
+        </span>
       </button>
 
     </section>
 
 
     <!-- CONTA -->
-    <section class="bg-white rounded-3xl p-5 shadow-sm mb-4">
+    <section class="card bg-white rounded-[28px] p-5 shadow-sm mb-4 slide">
 
-      <div class="flex justify-between">
-        <h2 class="font-bold text-lg">Conta</h2>
+      <div class="flex items-center justify-between">
 
-        <button onclick="editValue('balance')">
+        <div class="flex items-center gap-3">
+
+          <div class="bg-purple-100 rounded-full p-3">
+            <i data-lucide="wallet"
+               class="text-purple-700"
+               size="21"></i>
+          </div>
+
+          <div>
+            <h2 class="font-bold text-lg">
+              Conta
+            </h2>
+
+            <p class="text-gray-400 text-xs">
+              Saldo disponível
+            </p>
+          </div>
+
+        </div>
+
+        <button
+          onclick="editValue('balance')"
+          class="p-2"
+        >
           <i data-lucide="pencil" size="18"></i>
         </button>
+
       </div>
 
-      <p class="text-gray-500 text-sm mt-4">Saldo</p>
-      <p id="balanceCard" class="text-2xl font-bold mt-1">R$ 0,00</p>
+      <p id="balanceCard"
+         class="text-2xl font-black mt-6">
+        R$ 0,00
+      </p>
 
     </section>
 
 
     <!-- CARTÃO -->
-    <section class="bg-white rounded-3xl p-5 shadow-sm mb-4">
+    <section class="card bg-white rounded-[28px] p-5 shadow-sm mb-4 slide">
 
-      <div class="flex justify-between">
-        <h2 class="font-bold text-lg">Cartão de crédito</h2>
+      <div class="flex justify-between items-start">
 
-        <button onclick="editValue('invoice')">
+        <div>
+
+          <p class="text-gray-400 text-sm">
+            Cartão de crédito
+          </p>
+
+          <h2 class="font-bold text-xl mt-1">
+            Fatura atual
+          </h2>
+
+        </div>
+
+        <button
+          onclick="editValue('invoice')"
+          class="p-2"
+        >
           <i data-lucide="pencil" size="18"></i>
         </button>
+
       </div>
 
-      <div class="mt-5">
-        <p class="text-gray-500 text-sm">Fatura atual</p>
-        <p id="invoice" class="text-2xl font-bold">R$ 0,00</p>
-      </div>
 
-      <div class="mt-4">
-        <p class="text-gray-500 text-sm">Limite disponível</p>
+      <p id="invoice"
+         class="text-3xl font-black mt-5">
+        R$ 0,00
+      </p>
 
-        <div class="flex items-center gap-2">
-          <p id="limit" class="text-lg font-bold">R$ 0,00</p>
 
-          <button onclick="editValue('limit')">
+      <div class="border-t border-gray-100 mt-5 pt-5">
+
+        <div class="flex justify-between items-center">
+
+          <div>
+
+            <p class="text-gray-400 text-sm">
+              Limite disponível
+            </p>
+
+            <p id="limit"
+               class="font-bold text-lg mt-1">
+              R$ 0,00
+            </p>
+
+          </div>
+
+          <button
+            onclick="editValue('limit')"
+            class="bg-gray-100 p-3 rounded-full"
+          >
             <i data-lucide="pencil" size="16"></i>
           </button>
+
         </div>
+
       </div>
 
     </section>
 
 
     <!-- EMPRÉSTIMO -->
-    <section class="bg-white rounded-3xl p-5 shadow-sm mb-4">
+    <section class="card bg-white rounded-[28px] p-5 shadow-sm mb-4 slide">
 
-      <div class="flex justify-between">
+      <div class="flex items-start justify-between">
+
         <div>
-          <h2 class="font-bold text-lg">Empréstimo</h2>
-          <p class="text-gray-500 text-sm mt-1">
-            Valor disponível para simulação
-          </p>
+
+          <div class="flex items-center gap-3">
+
+            <div class="bg-purple-100 rounded-full p-3">
+              <i data-lucide="banknote"
+                 class="text-purple-700"
+                 size="21"></i>
+            </div>
+
+            <div>
+              <h2 class="font-bold text-lg">
+                Empréstimo
+              </h2>
+
+              <p class="text-gray-400 text-xs">
+                Disponível
+              </p>
+            </div>
+
+          </div>
+
         </div>
 
-        <button onclick="editValue('loan')">
+        <button
+          onclick="editValue('loan')"
+          class="p-2"
+        >
           <i data-lucide="pencil" size="18"></i>
         </button>
+
       </div>
 
-      <p id="loan" class="text-2xl font-bold mt-5">R$ 0,00</p>
+
+      <p id="loan"
+         class="text-2xl font-black mt-6">
+        R$ 0,00
+      </p>
 
     </section>
 
 
-    <!-- AVISO -->
-    <div class="bg-purple-50 border border-purple-200 rounded-2xl p-4 text-sm text-purple-900">
-      <b>Modo simulador:</b>
-      todos os valores exibidos são fictícios e ficam salvos apenas neste dispositivo.
-    </div>
+    <!-- ÚLTIMA OPERAÇÃO -->
+    <section
+      id="lastOperation"
+      class="hidden bg-white rounded-[28px] p-5 shadow-sm mb-4 slide"
+    >
+
+      <div class="flex items-center gap-3">
+
+        <div class="bg-green-100 rounded-full p-3">
+          <i data-lucide="check"
+             class="text-green-600"
+             size="20"></i>
+        </div>
+
+        <div>
+
+          <p class="text-xs text-gray-400">
+            Última operação
+          </p>
+
+          <p id="lastOperationText"
+             class="font-bold mt-1">
+            Pix
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
 
 
     <button
       onclick="logout()"
-      class="w-full mt-6 py-4 rounded-xl bg-gray-200 font-bold"
+      class="w-full mt-6 py-4 rounded-2xl bg-gray-200 hover:bg-gray-300 font-bold transition"
     >
       Sair
     </button>
@@ -227,37 +482,53 @@
   class="hidden fixed inset-0 modal items-center justify-center p-5 z-50"
 >
 
-  <div class="bg-white rounded-3xl p-6 w-full max-w-sm">
+  <div class="bg-white rounded-[30px] p-6 w-full max-w-sm shadow-2xl slide">
 
-    <h2 id="modalTitle" class="text-xl font-bold mb-5">
-      Editar valor
-    </h2>
+    <div class="flex items-center justify-between mb-5">
+
+      <h2 id="modalTitle"
+          class="text-xl font-black">
+        Editar valor
+      </h2>
+
+      <button
+        onclick="closeModal()"
+        class="bg-gray-100 rounded-full p-2"
+      >
+        <i data-lucide="x" size="18"></i>
+      </button>
+
+    </div>
+
 
     <input
       id="valueInput"
       type="number"
+      min="0"
       step="0.01"
-      class="w-full border rounded-xl p-4 text-xl outline-none"
-      placeholder="0.00"
+      class="w-full border border-gray-200 rounded-2xl p-4 text-xl outline-none transition"
+      placeholder="0,00"
     >
+
 
     <div class="flex gap-3 mt-5">
 
       <button
         onclick="closeModal()"
-        class="flex-1 bg-gray-200 rounded-xl py-4 font-bold"
+        class="flex-1 bg-gray-100 rounded-2xl py-4 font-bold"
       >
         Cancelar
       </button>
 
       <button
         onclick="saveValue()"
-        class="flex-1 bg-purple-700 text-white rounded-xl py-4 font-bold"
+        class="flex-1 purple text-white rounded-2xl py-4 font-bold"
       >
         Salvar
       </button>
 
     </div>
+
   </div>
 </div>
 
@@ -268,101 +539,202 @@
   class="hidden fixed inset-0 modal items-center justify-center p-5 z-50"
 >
 
-  <div class="bg-white rounded-3xl p-6 w-full max-w-sm">
+  <div class="bg-white rounded-[30px] p-6 w-full max-w-sm shadow-2xl slide">
 
-    <div class="text-center">
-      <div class="bg-purple-100 rounded-full p-4 w-fit mx-auto">
-        <i data-lucide="send" class="text-purple-700"></i>
+    <div class="flex items-center justify-between">
+
+      <div class="flex items-center gap-3">
+
+        <div class="bg-purple-100 rounded-full p-3">
+          <i data-lucide="send"
+             class="text-purple-700"
+             size="21"></i>
+        </div>
+
+        <div>
+
+          <h2 class="text-xl font-black">
+            Pix
+          </h2>
+
+          <p class="text-xs text-gray-400">
+            Operação local
+          </p>
+
+        </div>
+
       </div>
 
-      <h2 class="text-2xl font-bold mt-4">Pix</h2>
+      <button
+        onclick="closePix()"
+        class="bg-gray-100 rounded-full p-2"
+      >
+        <i data-lucide="x" size="18"></i>
+      </button>
 
-      <p class="text-gray-500 text-sm mt-1">
-        Operação simulada
-      </p>
     </div>
+
 
     <input
       id="pixAmount"
       type="number"
+      min="0"
       step="0.01"
       placeholder="Valor"
-      class="w-full border rounded-xl p-4 mt-6"
+      class="w-full border border-gray-200 rounded-2xl p-4 mt-6 outline-none"
     >
+
 
     <input
       id="pixKey"
       type="text"
-      placeholder="Chave Pix fictícia"
-      class="w-full border rounded-xl p-4 mt-3"
+      maxlength="80"
+      placeholder="Chave de teste"
+      class="w-full border border-gray-200 rounded-2xl p-4 mt-3 outline-none"
     >
 
-    <div class="flex gap-3 mt-5">
 
-      <button
-        onclick="closePix()"
-        class="flex-1 bg-gray-200 rounded-xl py-4 font-bold"
-      >
-        Cancelar
-      </button>
-
-      <button
-        onclick="confirmPix()"
-        class="flex-1 bg-purple-700 text-white rounded-xl py-4 font-bold"
-      >
-        Continuar
-      </button>
-
-    </div>
+    <button
+      onclick="confirmPix()"
+      class="w-full purple text-white rounded-2xl py-4 mt-5 font-bold"
+    >
+      Continuar
+    </button>
 
   </div>
 </div>
 
 
-<!-- RECIBO -->
+<!-- RESULTADO PIX -->
 <div
   id="receiptModal"
   class="hidden fixed inset-0 modal items-center justify-center p-5 z-50"
 >
 
-  <div class="bg-white rounded-3xl p-6 w-full max-w-sm text-center">
+  <div class="bg-white rounded-[30px] p-6 w-full max-w-sm text-center shadow-2xl slide">
 
     <div class="bg-green-100 rounded-full p-4 w-fit mx-auto">
-      <i data-lucide="check" class="text-green-600"></i>
+
+      <i data-lucide="check"
+         class="text-green-600"
+         size="28"></i>
+
     </div>
 
-    <h2 class="text-2xl font-bold mt-4">
-      Pix simulado
+
+    <h2 class="text-2xl font-black mt-4">
+      Operação concluída
     </h2>
 
-    <p class="text-3xl font-black mt-5" id="receiptAmount">
+
+    <p id="receiptAmount"
+       class="text-3xl font-black mt-5">
       R$ 0,00
     </p>
 
+
     <div class="text-left bg-gray-50 rounded-2xl p-4 mt-5 text-sm">
 
-      <p>
-        <b>Destinatário:</b>
-        <span id="receiptKey"></span>
-      </p>
+      <div class="flex justify-between gap-4">
 
-      <p class="mt-2">
-        <b>Status:</b>
-        Simulação concluída
-      </p>
+        <span class="text-gray-400">
+          Destinatário
+        </span>
+
+        <span id="receiptKey"
+              class="font-semibold text-right break-all">
+        </span>
+
+      </div>
+
+
+      <div class="flex justify-between mt-3">
+
+        <span class="text-gray-400">
+          Tipo
+        </span>
+
+        <span class="font-semibold">
+          Operação local
+        </span>
+
+      </div>
 
     </div>
 
-    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 mt-4 text-xs text-yellow-800">
-      <b>COMPROVANTE DE SIMULAÇÃO</b><br>
-      Nenhum dinheiro foi enviado.
-    </div>
 
     <button
       onclick="closeReceipt()"
-      class="w-full bg-purple-700 text-white rounded-xl py-4 mt-5 font-bold"
+      class="w-full purple text-white rounded-2xl py-4 mt-5 font-bold"
     >
       Fechar
+    </button>
+
+  </div>
+</div>
+
+
+<!-- CONFIGURAÇÕES -->
+<div
+  id="settingsModal"
+  class="hidden fixed inset-0 modal items-center justify-center p-5 z-50"
+>
+
+  <div class="bg-white rounded-[30px] p-6 w-full max-w-sm shadow-2xl slide">
+
+    <div class="flex justify-between items-center">
+
+      <h2 class="text-xl font-black">
+        Configurações
+      </h2>
+
+      <button
+        onclick="closeSettings()"
+        class="bg-gray-100 rounded-full p-2"
+      >
+        <i data-lucide="x" size="18"></i>
+      </button>
+
+    </div>
+
+
+    <button
+      onclick="editName()"
+      class="w-full flex items-center justify-between py-5 border-b"
+    >
+
+      <div class="flex items-center gap-3">
+
+        <i data-lucide="user"></i>
+
+        <span class="font-semibold">
+          Alterar nome
+        </span>
+
+      </div>
+
+      <i data-lucide="chevron-right" size="18"></i>
+
+    </button>
+
+
+    <button
+      onclick="resetData()"
+      class="w-full flex items-center justify-between py-5 text-red-600"
+    >
+
+      <div class="flex items-center gap-3">
+
+        <i data-lucide="trash-2"></i>
+
+        <span class="font-semibold">
+          Limpar dados
+        </span>
+
+      </div>
+
+      <i data-lucide="chevron-right" size="18"></i>
+
     </button>
 
   </div>
@@ -377,36 +749,52 @@
     invoice: 0,
     limit: 0,
     loan: 0,
-    visible: true
+    visible: true,
+    lastOperation: ""
   };
 
-  let state = JSON.parse(
-    localStorage.getItem("nusim_v2")
-  ) || defaultState;
+
+  let state;
+
+  try {
+    state =
+      JSON.parse(localStorage.getItem("nubank_v_state")) ||
+      { ...defaultState };
+  } catch {
+    state = { ...defaultState };
+  }
+
 
   let editing = null;
 
 
   function money(value) {
+
     return Number(value || 0).toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL"
     });
+
   }
 
 
   function save() {
+
     localStorage.setItem(
-      "nusim_v2",
+      "nubank_v_state",
       JSON.stringify(state)
     );
+
   }
 
 
   function login() {
 
+    const input =
+      document.getElementById("nameInput");
+
     const name =
-      document.getElementById("nameInput").value.trim();
+      input.value.trim();
 
     if (!name) {
       alert("Digite seu nome.");
@@ -414,9 +802,11 @@
     }
 
     state.name = name;
+
     save();
 
     showApp();
+
   }
 
 
@@ -431,13 +821,15 @@
       .classList.remove("hidden");
 
     updateUI();
+
   }
 
 
   function updateUI() {
 
     document.getElementById("hello").textContent =
-      "Olá, " + state.name + "!";
+      state.name || "Olá!";
+
 
     const values = [
       ["balance", state.balance],
@@ -447,6 +839,7 @@
       ["loan", state.loan]
     ];
 
+
     values.forEach(([id, value]) => {
 
       const element =
@@ -455,20 +848,46 @@
       if (!element) return;
 
       element.textContent =
-        state.visible ? money(value) : "••••••";
+        state.visible
+          ? money(value)
+          : "••••••";
+
     });
+
+
+    const last =
+      document.getElementById("lastOperation");
+
+    if (state.lastOperation) {
+
+      last.classList.remove("hidden");
+
+      document
+        .getElementById("lastOperationText")
+        .textContent =
+        state.lastOperation;
+
+    } else {
+
+      last.classList.add("hidden");
+
+    }
+
 
     save();
 
     lucide.createIcons();
+
   }
 
 
   function toggleBalance() {
 
-    state.visible = !state.visible;
+    state.visible =
+      !state.visible;
 
     updateUI();
+
   }
 
 
@@ -476,46 +895,82 @@
 
     editing = type;
 
-    const names = {
+
+    const titles = {
+
       balance: "Editar saldo",
+
       invoice: "Editar fatura",
+
       limit: "Editar limite",
+
       loan: "Editar empréstimo"
+
     };
 
-    document.getElementById("modalTitle").textContent =
-      names[type];
 
-    document.getElementById("valueInput").value =
+    document
+      .getElementById("modalTitle")
+      .textContent =
+      titles[type];
+
+
+    document
+      .getElementById("valueInput")
+      .value =
       state[type];
+
 
     const modal =
       document.getElementById("editModal");
 
+
     modal.classList.remove("hidden");
     modal.classList.add("flex");
 
+
     setTimeout(() => {
-      document.getElementById("valueInput").focus();
+
+      document
+        .getElementById("valueInput")
+        .focus();
+
     }, 100);
+
   }
 
 
   function saveValue() {
 
-    const value =
-      Number(document.getElementById("valueInput").value);
+    const input =
+      document.getElementById("valueInput");
 
-    if (isNaN(value) || value < 0) {
+    const value =
+      Number(input.value);
+
+
+    if (
+      Number.isNaN(value) ||
+      value < 0
+    ) {
+
       alert("Digite um valor válido.");
+
       return;
+
     }
 
-    state[editing] = value;
+
+    state[editing] =
+      Number(value.toFixed(2));
+
 
     save();
+
     updateUI();
+
     closeModal();
+
   }
 
 
@@ -528,6 +983,7 @@
     modal.classList.remove("flex");
 
     editing = null;
+
   }
 
 
@@ -536,11 +992,20 @@
     const modal =
       document.getElementById("pixModal");
 
+
+    document
+      .getElementById("pixAmount")
+      .value = "";
+
+
+    document
+      .getElementById("pixKey")
+      .value = "";
+
+
     modal.classList.remove("hidden");
     modal.classList.add("flex");
 
-    document.getElementById("pixAmount").value = "";
-    document.getElementById("pixKey").value = "";
   }
 
 
@@ -551,42 +1016,81 @@
 
     modal.classList.add("hidden");
     modal.classList.remove("flex");
+
   }
 
 
   function confirmPix() {
 
     const amount =
-      Number(document.getElementById("pixAmount").value);
+      Number(
+        document
+          .getElementById("pixAmount")
+          .value
+      );
+
 
     const key =
-      document.getElementById("pixKey").value.trim();
+      document
+        .getElementById("pixKey")
+        .value
+        .trim();
 
-    if (!amount || amount <= 0) {
+
+    if (
+      Number.isNaN(amount) ||
+      amount <= 0
+    ) {
+
       alert("Digite um valor válido.");
+
       return;
+
     }
+
 
     if (!key) {
-      alert("Digite uma chave fictícia.");
+
+      alert("Digite uma chave de teste.");
+
       return;
+
     }
 
-    document.getElementById("receiptAmount").textContent =
+
+    document
+      .getElementById("receiptAmount")
+      .textContent =
       money(amount);
 
-    document.getElementById("receiptKey").textContent =
+
+    document
+      .getElementById("receiptKey")
+      .textContent =
       key;
+
+
+    state.lastOperation =
+      "Pix de " + money(amount);
+
+
+    save();
+
+    updateUI();
 
     closePix();
 
-    const receipt =
+
+    const modal =
       document.getElementById("receiptModal");
 
-    receipt.classList.remove("hidden");
-    receipt.classList.add("flex");
+
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+
 
     lucide.createIcons();
+
   }
 
 
@@ -595,30 +1099,40 @@
     const modal =
       document.getElementById("receiptModal");
 
+
     modal.classList.add("hidden");
     modal.classList.remove("flex");
+
   }
 
 
-  function logout() {
+  function openSettings() {
 
-    state.name = "";
+    const modal =
+      document.getElementById("settingsModal");
 
-    save();
 
-    location.reload();
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+
+
+    lucide.createIcons();
+
   }
 
 
-  // Inicialização
+  function closeSettings() {
 
-  if (state.name) {
-    showApp();
+    const modal =
+      document.getElementById("settingsModal");
+
+
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+
   }
 
-  lucide.createIcons();
 
-</script>
+  function editName() {
 
-</body>
-</html>
+    
